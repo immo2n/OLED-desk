@@ -1,9 +1,7 @@
 #include "clock.h"
 #include "../../config/display.h"
 #include "../../config/wifi.h"
-#include <ESP8266HTTPClient.h>
-#include <WiFiClient.h>
-#include <WiFiClientSecure.h>
+#include "../../core/network.h"
 #include <ArduinoJson.h>
 
 // Time variables
@@ -67,9 +65,9 @@ void initClock() {
         display.println("Time sync failed!");
         display.display();
         delay(2000);
+        lastUpdateTime = millis(); // Set it even if failed, to prevent issues
     }
-    
-    lastUpdateTime = millis();
+    // Note: lastUpdateTime is now set when we receive API time for accurate seconds sync
 }
 
 void updateClock() {
@@ -78,121 +76,71 @@ void updateClock() {
         return;
     }
     
-    HTTPClient http;
-    
     Serial.println("\n=== Fetching time from BepariSoft API ===");
-    Serial.print("WiFi Status: ");
-    Serial.println(WiFi.status());
-    Serial.print("IP Address: ");
-    Serial.println(WiFi.localIP());
-    Serial.print("Gateway: ");
-    Serial.println(WiFi.gatewayIP());
-    Serial.print("DNS: ");
-    Serial.println(WiFi.dnsIP());
     
     // Use beparisoft API
     String url = "https://api.beparisoft.com/";
-    Serial.print("URL: ");
+    Serial.print("Fetching from: ");
     Serial.println(url);
     
-    // Configure HTTP client
-    http.setTimeout(15000); // 15 second timeout
-    http.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
-    http.setUserAgent("ESP8266");
-    http.setReuse(false); // Don't reuse connections
+    String payload = httpGet(url, true); // true = HTTPS
     
-    // Try to connect
-    Serial.println("Attempting HTTPS connection...");
-    
-    // For HTTPS, use WiFiClientSecure
-    WiFiClientSecure secureClient;
-    secureClient.setInsecure(); // Skip certificate verification for simplicity
-    
-    if (http.begin(secureClient, url)) {
-        Serial.println("HTTPS client initialized, sending GET request...");
-        
-        http.addHeader("Connection", "close");
-        http.addHeader("Accept", "application/json");
-        
-        int httpCode = http.GET();
-        
-        Serial.printf("HTTP Response Code: %d\n", httpCode);
-        
-        if (httpCode == -5) {
-            Serial.println("Connection lost - possible causes:");
-            Serial.println("  - Network/firewall blocking HTTP");
-            Serial.println("  - DNS resolution issue");
-            Serial.println("  - Server connection timeout");
-        }
-        
-        if (httpCode == HTTP_CODE_OK) {
-            String payload = http.getString();
-            Serial.println("✓ Time data received!");
-            Serial.print("Payload length: ");
-            Serial.println(payload.length());
-            Serial.println("Full payload:");
-            Serial.println(payload);
+    if (payload.length() > 0) {
+        Serial.println("✓ Time data received!");
+        Serial.print("Payload length: ");
+        Serial.println(payload.length());
             
-            // Parse JSON
-            JsonDocument doc;
-            DeserializationError error = deserializeJson(doc, payload);
+        // Parse JSON
+        JsonDocument doc;
+        DeserializationError error = deserializeJson(doc, payload);
+        
+        if (!error) {
+            Serial.println("✓ JSON parsed successfully");
             
-            if (!error) {
-                Serial.println("✓ JSON parsed successfully");
-                
-                // Get datetime string from nested structure: data.origin.datetime
-                const char* datetime = doc["data"]["origin"]["datetime"];
-                if (datetime == nullptr) {
-                    Serial.println("ERROR: data.origin.datetime field is null!");
-                    http.end();
-                    return;
-                }
-                
-                Serial.print("Datetime string: ");
-                Serial.println(datetime);
-                
-                // Parse datetime
-                int year, month, day, hour, minute, second;
-                int parsed = sscanf(datetime, "%d-%d-%dT%d:%d:%d", &year, &month, &day, &hour, &minute, &second);
-                
-                Serial.printf("Parsed %d fields: year=%d, month=%d, day=%d, hour=%d, min=%d, sec=%d\n", 
-                    parsed, year, month, day, hour, minute, second);
-                
-                if (parsed == 6 && year > 2000 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-                    currentYear = year % 100; // Get last 2 digits
-                    currentMonth = month;
-                    currentDay = day;
-                    currentHour = hour;
-                    currentMinute = minute;
-                    currentSecond = second;
-                    
-                    timeInitialized = true;
-                    lastFetchTime = millis();
-                    
-                    Serial.println("✓✓✓ TIME SUCCESSFULLY SET ✓✓✓");
-                    Serial.printf("Time: %02d:%02d:%02d\n", currentHour, currentMinute, currentSecond);
-                    Serial.printf("Date: %s %d, %d\n", 
-                        monthNames[currentMonth - 1], currentDay, currentYear);
-                } else {
-                    Serial.println("ERROR: Failed to parse datetime fields or invalid values!");
-                    Serial.printf("Validation: year>2000=%d, month 1-12=%d, day 1-31=%d\n",
-                        year > 2000, month >= 1 && month <= 12, day >= 1 && day <= 31);
-                }
-            } else {
-                Serial.print("JSON parsing failed: ");
-                Serial.println(error.c_str());
+            // Get datetime string from nested structure: data.origin.datetime
+            const char* datetime = doc["data"]["origin"]["datetime"];
+            if (datetime == nullptr) {
+                Serial.println("ERROR: data.origin.datetime field is null!");
+                return;
             }
-        } else if (httpCode < 0) {
-            Serial.print("HTTP GET failed with error: ");
-            Serial.println(http.errorToString(httpCode).c_str());
+            
+            Serial.print("Datetime string: ");
+            Serial.println(datetime);
+            
+            // Parse datetime
+            int year, month, day, hour, minute, second;
+            int parsed = sscanf(datetime, "%d-%d-%dT%d:%d:%d", &year, &month, &day, &hour, &minute, &second);
+            
+            Serial.printf("Parsed %d fields: year=%d, month=%d, day=%d, hour=%d, min=%d, sec=%d\n", 
+                parsed, year, month, day, hour, minute, second);
+            
+            if (parsed == 6 && year > 2000 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+                currentYear = year; // Get full year
+                currentMonth = month;
+                currentDay = day;
+                currentHour = hour;
+                currentMinute = minute;
+                currentSecond = second;
+                
+                timeInitialized = true;
+                lastFetchTime = millis();
+                lastUpdateTime = millis(); // Sync the update timer with API time
+                
+                Serial.println("✓✓✓ TIME SUCCESSFULLY SET ✓✓✓");
+                Serial.printf("Time: %02d:%02d:%02d\n", currentHour, currentMinute, currentSecond);
+                Serial.printf("Date: %s %d, %d\n", 
+                    monthNames[currentMonth - 1], currentDay, currentYear);
+            } else {
+                Serial.println("ERROR: Failed to parse datetime fields or invalid values!");
+                Serial.printf("Validation: year>2000=%d, month 1-12=%d, day 1-31=%d\n",
+                    year > 2000, month >= 1 && month <= 12, day >= 1 && day <= 31);
+            }
         } else {
-            Serial.printf("HTTP GET returned unexpected code: %d\n", httpCode);
+            Serial.print("JSON parsing failed: ");
+            Serial.println(error.c_str());
         }
-        
-        http.end();
     } else {
-        Serial.println("ERROR: Unable to initialize HTTP connection!");
-        Serial.println("This could be a DNS or network issue.");
+        Serial.println("ERROR: Failed to fetch data from API!");
     }
     
     Serial.println("=== End of time fetch ===\n");
@@ -216,15 +164,9 @@ String getCurrentDate() {
     return String(dateStr);
 }
 
-void displayClock() {
-    // If time not initialized, show error
+// Separate function to update time (called always, even when not displaying)
+void updateClockTime() {
     if (!timeInitialized) {
-        display.clearDisplay();
-        display.setTextSize(1);
-        display.setTextColor(WHITE);
-        display.setCursor(15, 25);
-        display.println("Try reset");
-        display.display();
         return;
     }
     
@@ -252,6 +194,22 @@ void displayClock() {
     if (currentTime - lastFetchTime >= FETCH_INTERVAL) {
         updateClock();
     }
+}
+
+void displayClock() {
+    // If time not initialized, show error
+    if (!timeInitialized) {
+        display.clearDisplay();
+        display.setTextSize(1);
+        display.setTextColor(WHITE);
+        display.setCursor(15, 25);
+        display.println("Try reset");
+        display.display();
+        return;
+    }
+    
+    // Update time (this happens even when not displaying)
+    updateClockTime();
     
     // Display on OLED - Modern Design
     display.clearDisplay();

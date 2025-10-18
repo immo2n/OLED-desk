@@ -19,7 +19,7 @@ struct Bubble {
     bool active;
 };
 
-const int NUM_FISH = 5;
+const int NUM_FISH = 4;  // Fewer fish, but bigger
 const int NUM_BUBBLES = 8;
 Fish fishes[NUM_FISH];
 Bubble bubbles[NUM_BUBBLES];
@@ -33,9 +33,9 @@ void initFishes() {
     // Initialize fish at random positions
     for (int i = 0; i < NUM_FISH; i++) {
         fishes[i].x = random(-20, 128);
-        fishes[i].y = random(10, 50);
-        fishes[i].speed = random(1, 4);
-        fishes[i].size = random(1, 4);
+        fishes[i].y = random(15, 45);
+        fishes[i].speed = random(1, 3);
+        fishes[i].size = random(2, 4); // Size 2-3 only (medium and large)
         fishes[i].direction = random(0, 2);
         fishes[i].tailWag = 0;
     }
@@ -50,102 +50,147 @@ void initFishes() {
 }
 
 void drawFish(int x, int y, int size, bool direction, int tailWag) {
-    // Simple fish design
-    if (size == 1) {
-        // Small fish (5x3)
+    // Bigger, more detailed fish designs
+    if (size == 2) {
+        // Medium fish (20x14) - BIG!
         if (direction) {
-            // Facing right
-            display.drawPixel(x, y, WHITE);
-            display.drawPixel(x+1, y-1, WHITE);
-            display.drawPixel(x+1, y, WHITE);
-            display.drawPixel(x+1, y+1, WHITE);
-            display.drawPixel(x+2, y, WHITE);
-            // Tail (wagging)
-            display.drawPixel(x-1, y + (tailWag % 2 == 0 ? -1 : 1), WHITE);
-        } else {
-            // Facing left
-            display.drawPixel(x, y, WHITE);
-            display.drawPixel(x-1, y-1, WHITE);
-            display.drawPixel(x-1, y, WHITE);
-            display.drawPixel(x-1, y+1, WHITE);
-            display.drawPixel(x-2, y, WHITE);
-            // Tail
-            display.drawPixel(x+1, y + (tailWag % 2 == 0 ? -1 : 1), WHITE);
-        }
-    } else if (size == 2) {
-        // Medium fish (7x5)
-        if (direction) {
-            // Body
-            display.fillCircle(x, y, 2, WHITE);
-            display.drawPixel(x+2, y, WHITE);
-            display.drawPixel(x+3, y, WHITE);
-            // Eye
-            display.drawPixel(x+1, y-1, BLACK);
-            // Tail
-            display.drawPixel(x-2, y-1, WHITE);
-            display.drawPixel(x-2, y, WHITE);
-            display.drawPixel(x-2, y+1, WHITE);
+            // Body - larger filled area
+            display.fillCircle(x, y, 5, WHITE);
+            display.fillCircle(x+4, y, 4, WHITE);
+            display.fillCircle(x+7, y, 3, WHITE);
+            display.drawPixel(x+9, y, WHITE);
+            // Eye (larger with highlight)
+            display.fillCircle(x+4, y-2, 2, BLACK);
+            display.drawPixel(x+4, y-3, WHITE);
+            // Fins (bigger)
+            display.drawLine(x, y+5, x-1, y+6, WHITE);
+            display.drawLine(x+1, y+6, x+1, y+7, WHITE);
+            display.drawLine(x, y-5, x-1, y-6, WHITE);
+            display.drawLine(x+1, y-6, x+1, y-7, WHITE);
+            // Tail (bigger, animated)
+            display.drawLine(x-5, y-4, x-7, y-6, WHITE);
+            display.drawLine(x-5, y-3, x-8, y-5, WHITE);
+            display.drawLine(x-5, y-2, x-8, y-4, WHITE);
+            display.drawLine(x-5, y-1, x-9, y-2, WHITE);
+            display.drawLine(x-5, y, x-10, y, WHITE);
+            display.drawLine(x-5, y+1, x-9, y+2, WHITE);
+            display.drawLine(x-5, y+2, x-8, y+4, WHITE);
+            display.drawLine(x-5, y+3, x-8, y+5, WHITE);
+            display.drawLine(x-5, y+4, x-7, y+6, WHITE);
             if (tailWag % 2 == 0) {
-                display.drawPixel(x-3, y-1, WHITE);
+                display.drawPixel(x-9, y-6, WHITE);
+                display.drawPixel(x-10, y-5, WHITE);
             } else {
-                display.drawPixel(x-3, y+1, WHITE);
+                display.drawPixel(x-9, y+6, WHITE);
+                display.drawPixel(x-10, y+5, WHITE);
             }
         } else {
-            // Body
-            display.fillCircle(x, y, 2, WHITE);
-            display.drawPixel(x-2, y, WHITE);
-            display.drawPixel(x-3, y, WHITE);
-            // Eye
-            display.drawPixel(x-1, y-1, BLACK);
-            // Tail
-            display.drawPixel(x+2, y-1, WHITE);
-            display.drawPixel(x+2, y, WHITE);
-            display.drawPixel(x+2, y+1, WHITE);
+            // Body - larger filled area
+            display.fillCircle(x, y, 5, WHITE);
+            display.fillCircle(x-4, y, 4, WHITE);
+            display.fillCircle(x-7, y, 3, WHITE);
+            display.drawPixel(x-9, y, WHITE);
+            // Eye (larger with highlight)
+            display.fillCircle(x-4, y-2, 2, BLACK);
+            display.drawPixel(x-4, y-3, WHITE);
+            // Fins (bigger)
+            display.drawLine(x, y+5, x+1, y+6, WHITE);
+            display.drawLine(x-1, y+6, x-1, y+7, WHITE);
+            display.drawLine(x, y-5, x+1, y-6, WHITE);
+            display.drawLine(x-1, y-6, x-1, y-7, WHITE);
+            // Tail (bigger, animated)
+            display.drawLine(x+5, y-4, x+7, y-6, WHITE);
+            display.drawLine(x+5, y-3, x+8, y-5, WHITE);
+            display.drawLine(x+5, y-2, x+8, y-4, WHITE);
+            display.drawLine(x+5, y-1, x+9, y-2, WHITE);
+            display.drawLine(x+5, y, x+10, y, WHITE);
+            display.drawLine(x+5, y+1, x+9, y+2, WHITE);
+            display.drawLine(x+5, y+2, x+8, y+4, WHITE);
+            display.drawLine(x+5, y+3, x+8, y+5, WHITE);
+            display.drawLine(x+5, y+4, x+7, y+6, WHITE);
             if (tailWag % 2 == 0) {
-                display.drawPixel(x+3, y-1, WHITE);
+                display.drawPixel(x+9, y-6, WHITE);
+                display.drawPixel(x+10, y-5, WHITE);
             } else {
-                display.drawPixel(x+3, y+1, WHITE);
+                display.drawPixel(x+9, y+6, WHITE);
+                display.drawPixel(x+10, y+5, WHITE);
             }
         }
     } else {
-        // Large fish (9x7)
+        // Extra Large fish (26x16) - MASSIVE!
         if (direction) {
-            // Body
-            display.fillCircle(x, y, 3, WHITE);
-            display.drawPixel(x+3, y, WHITE);
-            display.drawPixel(x+4, y, WHITE);
-            // Eye
-            display.drawPixel(x+2, y-1, BLACK);
-            // Fins
-            display.drawPixel(x, y+3, WHITE);
-            display.drawPixel(x, y-3, WHITE);
-            // Tail
-            display.drawLine(x-3, y-2, x-4, y-3, WHITE);
-            display.drawLine(x-3, y, x-4, y, WHITE);
-            display.drawLine(x-3, y+2, x-4, y+3, WHITE);
+            // Body - massive with mouth
+            display.fillCircle(x, y, 6, WHITE);
+            display.fillCircle(x+5, y, 5, WHITE);
+            display.fillCircle(x+9, y, 4, WHITE);
+            display.drawPixel(x+12, y, WHITE);
+            display.drawPixel(x+13, y, WHITE);
+            // Mouth
+            display.drawLine(x+11, y-1, x+12, y-2, WHITE);
+            display.drawLine(x+11, y+1, x+12, y+2, WHITE);
+            // Eye (huge with highlight)
+            display.fillCircle(x+6, y-2, 2, BLACK);
+            display.fillCircle(x+7, y-3, 1, WHITE);
+            // Fins (much bigger)
+            display.drawLine(x, y+6, x-2, y+7, WHITE);
+            display.drawLine(x+1, y+7, x+2, y+8, WHITE);
+            display.drawLine(x, y-6, x-2, y-7, WHITE);
+            display.drawLine(x+1, y-7, x+2, y-8, WHITE);
+            // Tail (massive and fancier)
+            display.drawLine(x-6, y-5, x-10, y-7, WHITE);
+            display.drawLine(x-6, y-4, x-10, y-6, WHITE);
+            display.drawLine(x-6, y-3, x-11, y-5, WHITE);
+            display.drawLine(x-6, y-2, x-12, y-3, WHITE);
+            display.drawLine(x-6, y-1, x-13, y-1, WHITE);
+            display.drawLine(x-6, y, x-14, y, WHITE);
+            display.drawLine(x-6, y+1, x-13, y+1, WHITE);
+            display.drawLine(x-6, y+2, x-12, y+3, WHITE);
+            display.drawLine(x-6, y+3, x-11, y+5, WHITE);
+            display.drawLine(x-6, y+4, x-10, y+6, WHITE);
+            display.drawLine(x-6, y+5, x-10, y+7, WHITE);
             if (tailWag % 2 == 0) {
-                display.drawPixel(x-5, y-3, WHITE);
+                display.drawPixel(x-11, y-7, WHITE);
+                display.drawPixel(x-12, y-6, WHITE);
             } else {
-                display.drawPixel(x-5, y+3, WHITE);
+                display.drawPixel(x-11, y+7, WHITE);
+                display.drawPixel(x-12, y+6, WHITE);
             }
         } else {
-            // Body
-            display.fillCircle(x, y, 3, WHITE);
-            display.drawPixel(x-3, y, WHITE);
-            display.drawPixel(x-4, y, WHITE);
-            // Eye
-            display.drawPixel(x-2, y-1, BLACK);
-            // Fins
-            display.drawPixel(x, y+3, WHITE);
-            display.drawPixel(x, y-3, WHITE);
-            // Tail
-            display.drawLine(x+3, y-2, x+4, y-3, WHITE);
-            display.drawLine(x+3, y, x+4, y, WHITE);
-            display.drawLine(x+3, y+2, x+4, y+3, WHITE);
+            // Body - massive with mouth
+            display.fillCircle(x, y, 6, WHITE);
+            display.fillCircle(x-5, y, 5, WHITE);
+            display.fillCircle(x-9, y, 4, WHITE);
+            display.drawPixel(x-12, y, WHITE);
+            display.drawPixel(x-13, y, WHITE);
+            // Mouth
+            display.drawLine(x-11, y-1, x-12, y-2, WHITE);
+            display.drawLine(x-11, y+1, x-12, y+2, WHITE);
+            // Eye (huge with highlight)
+            display.fillCircle(x-6, y-2, 2, BLACK);
+            display.fillCircle(x-7, y-3, 1, WHITE);
+            // Fins (much bigger)
+            display.drawLine(x, y+6, x+2, y+7, WHITE);
+            display.drawLine(x-1, y+7, x-2, y+8, WHITE);
+            display.drawLine(x, y-6, x+2, y-7, WHITE);
+            display.drawLine(x-1, y-7, x-2, y-8, WHITE);
+            // Tail (massive and fancier)
+            display.drawLine(x+6, y-5, x+10, y-7, WHITE);
+            display.drawLine(x+6, y-4, x+10, y-6, WHITE);
+            display.drawLine(x+6, y-3, x+11, y-5, WHITE);
+            display.drawLine(x+6, y-2, x+12, y-3, WHITE);
+            display.drawLine(x+6, y-1, x+13, y-1, WHITE);
+            display.drawLine(x+6, y, x+14, y, WHITE);
+            display.drawLine(x+6, y+1, x+13, y+1, WHITE);
+            display.drawLine(x+6, y+2, x+12, y+3, WHITE);
+            display.drawLine(x+6, y+3, x+11, y+5, WHITE);
+            display.drawLine(x+6, y+4, x+10, y+6, WHITE);
+            display.drawLine(x+6, y+5, x+10, y+7, WHITE);
             if (tailWag % 2 == 0) {
-                display.drawPixel(x+5, y-3, WHITE);
+                display.drawPixel(x+11, y-7, WHITE);
+                display.drawPixel(x+12, y-6, WHITE);
             } else {
-                display.drawPixel(x+5, y+3, WHITE);
+                display.drawPixel(x+11, y+7, WHITE);
+                display.drawPixel(x+12, y+6, WHITE);
             }
         }
     }
@@ -161,15 +206,17 @@ void updateFishes() {
         for (int i = 0; i < NUM_FISH; i++) {
             if (fishes[i].direction) {
                 fishes[i].x += fishes[i].speed;
-                if (fishes[i].x > 140) {
-                    fishes[i].x = -20;
-                    fishes[i].y = random(10, 50);
+                if (fishes[i].x > 145) {
+                    fishes[i].x = -25;
+                    fishes[i].y = random(15, 45);
+                    fishes[i].size = random(2, 4); // Regenerate size
                 }
             } else {
                 fishes[i].x -= fishes[i].speed;
-                if (fishes[i].x < -20) {
-                    fishes[i].x = 140;
-                    fishes[i].y = random(10, 50);
+                if (fishes[i].x < -25) {
+                    fishes[i].x = 145;
+                    fishes[i].y = random(15, 45);
+                    fishes[i].size = random(2, 4); // Regenerate size
                 }
             }
             
@@ -227,8 +274,8 @@ void displayFishes() {
     // Draw "Aquarium" text
     display.setTextSize(1);
     display.setTextColor(WHITE);
-    display.setCursor(40, 2);
-    display.print("~ Aquarium ~");
+    display.setCursor(25, 2);
+    display.print("~ Fish World ~");
     
     display.display();
 }
