@@ -174,7 +174,8 @@ void updateClockTime() {
     unsigned long currentTime = millis();
     unsigned long elapsed = currentTime - lastUpdateTime;
     
-    if (elapsed >= 1000) {
+    // Handle multiple seconds if needed (e.g., if loop was delayed)
+    while (elapsed >= 1000) {
         currentSecond++;
         if (currentSecond >= 60) {
             currentSecond = 0;
@@ -187,7 +188,9 @@ void updateClockTime() {
                 }
             }
         }
-        lastUpdateTime = currentTime;
+        // Increment by exactly 1000ms to avoid drift
+        lastUpdateTime += 1000;
+        elapsed = currentTime - lastUpdateTime;
     }
     
     // Fetch from API periodically
