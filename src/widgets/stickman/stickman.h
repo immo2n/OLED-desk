@@ -8,7 +8,7 @@ enum Animation {
     HIGH_FIVE,
     DANCING_TOGETHER,
     PLAYING_CATCH,
-    RACING,
+    PUSH_UPS,
     TUG_OF_WAR,
     CELEBRATION_TOGETHER
 };

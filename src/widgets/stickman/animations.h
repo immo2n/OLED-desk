@@ -13,7 +13,7 @@ void drawStickman(Adafruit_SSD1306& display, int x, int y,
 void drawHighFive(Adafruit_SSD1306& display, int frame);
 void drawDancingTogether(Adafruit_SSD1306& display, int frame);
 void drawPlayingCatch(Adafruit_SSD1306& display, int frame);
-void drawRacing(Adafruit_SSD1306& display, int frame);
+void drawPushUps(Adafruit_SSD1306& display, int frame);
 void drawTugOfWar(Adafruit_SSD1306& display, int frame);
 void drawCelebrationTogether(Adafruit_SSD1306& display, int frame);
 

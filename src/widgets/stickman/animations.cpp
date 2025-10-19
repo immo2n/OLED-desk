@@ -137,28 +137,70 @@ void drawPlayingCatch(Adafruit_SSD1306& display, int frame) {
     display.fillCircle(ballX, ballY, 2, WHITE);
 }
 
-void drawRacing(Adafruit_SSD1306& display, int frame) {
-    int y = 32;
+void drawPushUps(Adafruit_SSD1306& display, int frame) {
+    int x1 = 35; // Person doing push-ups
+    int x2 = 95; // Person counting/cheering
+    int y1 = 42;
+    int y2 = 32;
     
-    // Both running across screen
-    int x1 = 10 + (frame * 8);
-    int x2 = 15 + (frame * 7); // Slightly slower
+    // Push-up cycle: down (frames 0-1), up (frames 2-3), down (4-5), up (6-7)
+    bool isDown = (frame % 4) < 2;
     
-    if (x1 > 128 && x2 > 128) {
-        x1 = 10;
-        x2 = 15;
+    if (isDown) {
+        // Arms bent, body lower
+        // Horizontal body position for push-up
+        int bodyY = y1 + 2;
+        int headY = bodyY - 4;
+        
+        // Draw person in push-up position (down)
+        display.fillCircle(x1, headY, 4, WHITE); // Head
+        display.drawLine(x1, headY + 4, x1 + 15, headY + 4, WHITE); // Body horizontal
+        
+        // Arms bent (supporting position)
+        display.drawLine(x1 + 3, headY + 4, x1 - 2, headY + 10, WHITE); // Left arm
+        display.drawLine(x1 + 12, headY + 4, x1 + 17, headY + 10, WHITE); // Right arm
+        
+        // Legs extended back
+        display.drawLine(x1 + 15, headY + 4, x1 + 20, headY + 12, WHITE); // Left leg
+        display.drawLine(x1 + 15, headY + 4, x1 + 24, headY + 12, WHITE); // Right leg
+    } else {
+        // Arms extended, body higher
+        int bodyY = y1 - 2;
+        int headY = bodyY - 4;
+        
+        // Draw person in push-up position (up)
+        display.fillCircle(x1, headY, 4, WHITE); // Head
+        display.drawLine(x1, headY + 4, x1 + 15, headY + 4, WHITE); // Body horizontal
+        
+        // Arms extended
+        display.drawLine(x1 + 3, headY + 4, x1 - 2, headY + 14, WHITE); // Left arm
+        display.drawLine(x1 + 12, headY + 4, x1 + 17, headY + 14, WHITE); // Right arm
+        
+        // Legs extended back
+        display.drawLine(x1 + 15, headY + 4, x1 + 20, headY + 12, WHITE); // Left leg
+        display.drawLine(x1 + 15, headY + 4, x1 + 24, headY + 12, WHITE); // Right leg
     }
     
-    // Running animation
-    int legSwing1 = (frame % 2 == 0) ? 6 : -6;
-    int legSwing2 = ((frame + 1) % 2 == 0) ? 6 : -6;
+    // Person counting - alternating poses
+    if (frame % 2 == 0) {
+        // Arms up cheering
+        drawStickman(display, x2, y2, -10, -10, 0, 0, 0, 0);
+    } else {
+        // One arm up counting
+        drawStickman(display, x2, y2, -12, 4, 0, 0, 0, 0);
+    }
     
-    drawStickman(display, x1, y, -4, 4, legSwing1, -legSwing1, 0, 0);
-    drawStickman(display, x2, y, -4, 4, legSwing2, -legSwing2, 0, 0);
+    // Count display
+    int count = (frame / 2) + 1;
+    display.setTextSize(1);
+    display.setCursor(82, 10);
+    display.print(count);
     
-    // Finish line
-    display.drawLine(115, 20, 115, 55, WHITE);
-    display.drawLine(120, 20, 120, 55, WHITE);
+    // Encouragement on last reps
+    if (frame >= 6) {
+        display.setCursor(70, 2);
+        display.print("GO!");
+    }
 }
 
 void drawTugOfWar(Adafruit_SSD1306& display, int frame) {

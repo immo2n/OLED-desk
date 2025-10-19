@@ -54,6 +54,13 @@ void displayStars() {
     
     display.clearDisplay();
     
+    // Draw moon (top right corner)
+    display.fillCircle(110, 15, 10, WHITE);
+    // Moon craters
+    display.fillCircle(105, 12, 2, BLACK);
+    display.fillCircle(113, 17, 3, BLACK);
+    display.fillCircle(110, 20, 2, BLACK);
+    
     // Draw stars with different sizes based on brightness - BIGGER!
     for (int i = 0; i < NUM_STARS; i++) {
         int x = stars[i].x;

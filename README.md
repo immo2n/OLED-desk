@@ -9,6 +9,35 @@ An animated ESP8266-powered OLED display featuring a digital clock, aquarium, st
   <img src="screenshots/full_board_view.jpg" alt="Full Board View" width="800"/>
 </div>
 
+### 🎬 Animations in Action
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <img src="screenshots/gif/fishworld.gif" alt="Fish Aquarium Animation" width="300"/>
+        <br/>
+        <b>🐠 Fishworld Aquarium</b>
+        <br/>
+        Swimming fish with bubbles
+      </td>
+      <td align="center">
+        <img src="screenshots/gif/stickman-hi5.gif" alt="Stickman High Five" width="300"/>
+        <br/>
+        <b>🙌 High Five!</b>
+        <br/>
+        Stickmen running to celebrate
+      </td>
+      <td align="center">
+        <img src="screenshots/gif/stickmans.gif" alt="Stickman Animations" width="300"/>
+        <br/>
+        <b>🕺 Stickman Adventures</b>
+        <br/>
+        Multiple interactive animations
+      </td>
+    </tr>
+  </table>
+</div>
+
 ### Widget Gallery
 <div align="center">
   <table>
