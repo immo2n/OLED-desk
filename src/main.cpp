@@ -6,9 +6,10 @@
 #include "widgets/fishes/fishes.h"
 #include "widgets/stickman/stickman.h"
 #include "widgets/gun/gun.h"
+#include "widgets/horror/horror.h"
 
 // Widget switching
-enum Widget { CLOCK, FISHES, STARS, STICKMAN, GUN };
+enum Widget { CLOCK, FISHES, STARS, STICKMAN, GUN, HORROR };
 Widget currentWidget = CLOCK;
 unsigned long lastSwitchTime = 0;
 const unsigned long CLOCK_DURATION = 20000;   // 20 seconds
@@ -38,6 +39,9 @@ void setup() {
     // Initialize gun
     initGun();
     
+    // Initialize horror
+    initHorror();
+    
     // Start with clock
     lastSwitchTime = millis();
 }
@@ -49,13 +53,13 @@ void loop() {
     // Pattern: Clock 20s -> Random Widget 10s -> Clock 20s -> Random Widget 10s -> repeat
     if (currentWidget == CLOCK) {
         if (currentTime - lastSwitchTime >= CLOCK_DURATION) {
-            // Randomly pick a widget (Fish, Stars, Stickman, or Gun)
-            Widget widgets[] = {FISHES, STARS, STICKMAN, GUN};
-            int randomIndex = random(0, 4);
+            // Randomly pick a widget (Fish, Stars, Stickman, Gun, or Horror)
+            Widget widgets[] = {FISHES, STARS, STICKMAN, GUN, HORROR};
+            int randomIndex = random(0, 5);
             currentWidget = widgets[randomIndex];
             lastSwitchTime = currentTime;
             
-            const char* widgetNames[] = {"Fishes", "Stars", "Stickman", "Gun"};
+            const char* widgetNames[] = {"Fishes", "Stars", "Stickman", "Gun", "Horror"};
             Serial.print("Switching to ");
             Serial.println(widgetNames[randomIndex]);
         }
@@ -80,8 +84,10 @@ void loop() {
         displayStars();
     } else if (currentWidget == STICKMAN) {
         displayStickman();
-    } else {
+    } else if (currentWidget == GUN) {
         displayGun();
+    } else {
+        displayHorror();
     }
     
     delay(50); // Small delay for smooth animation
