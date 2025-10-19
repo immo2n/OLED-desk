@@ -1,5 +1,11 @@
 # 🖥️ OLED Desk Display
 
+<div align="center">
+
+![Visitors](https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fimmo2n%2FOLED-desk&label=Visitors&countColor=%23263759&style=flat)
+
+</div>
+
 An animated ESP8266-powered OLED display featuring a digital clock, aquarium, starfield, and interactive stick figures!
 
 ## 📸 Project Preview
